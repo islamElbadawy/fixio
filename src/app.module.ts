@@ -5,7 +5,7 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { TsMorphMetadataProvider } from '@mikro-orm/reflection';
 import { SharedModule } from './modules/shared/shared.module';
 import { IdentityModule } from './modules/identity/identity.module';
-import { PostgreSqlDriver } from 'node_modules/@mikro-orm/postgresql/PostgreSqlDriver';
+import { PostgreSqlDriver } from '@mikro-orm/postgresql';
 
 @Module({
   imports: [

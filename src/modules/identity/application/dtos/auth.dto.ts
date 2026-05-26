@@ -6,7 +6,7 @@ import {
   IsEnum,
 } from 'class-validator';
 import { UserRole } from '../../domain/entities/role.enum';
-import { ApiProperty } from 'node_modules/@nestjs/swagger/dist/decorators/api-property.decorator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class LoginDto {
   @ApiProperty({ example: 'admin@fixio.com' })
