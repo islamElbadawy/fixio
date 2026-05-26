@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { appConfig, dbConfig, jwtConfig } from './config/app.config';
+import { MikroOrmModule } from '@mikro-orm/nestjs';
+import { TsMorphMetadataProvider } from '@mikro-orm/reflection';
+import { SharedModule } from './modules/shared/shared.module';
 
 @Module({
   imports: [
@@ -9,6 +12,22 @@ import { appConfig, dbConfig, jwtConfig } from './config/app.config';
       load: [appConfig, dbConfig, jwtConfig],
       envFilePath: '.env',
     }),
+    MikroOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        host: config.get<string>('database.host'),
+        port: config.get<number>('database.port'),
+        user: config.get<string>('database.username'),
+        password: config.get<string>('database.password'),
+        dbName: config.get<string>('database.name'),
+        entities: ['dist/**/*.entity.js'],
+        entitiesTs: ['src/**/*.entity.ts'],
+        metadataProvider: TsMorphMetadataProvider,
+        autoLoadEntities: true,
+        debug: config.get<string>('app.nodeEnv') === 'development',
+      }),
+    }),
+    SharedModule,
   ],
   controllers: [],
   providers: [],
