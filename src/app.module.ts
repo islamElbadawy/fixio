@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { appConfig, dbConfig, jwtConfig } from './config/app.config';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { TsMorphMetadataProvider } from '@mikro-orm/reflection';
+import { SharedModule } from './modules/shared/shared.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { TsMorphMetadataProvider } from '@mikro-orm/reflection';
         debug: config.get<string>('app.nodeEnv') === 'development',
       }),
     }),
+    SharedModule,
   ],
   controllers: [],
   providers: [],
