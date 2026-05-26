@@ -1,4 +1,4 @@
-import { defineConfig } from '@mikro-orm/core';
+import { defineConfig } from '@mikro-orm/postgresql';
 import { TsMorphMetadataProvider } from '@mikro-orm/reflection';
 
 export default defineConfig({
