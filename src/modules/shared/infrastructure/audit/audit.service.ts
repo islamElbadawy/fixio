@@ -1,6 +1,7 @@
-import { EntityManager } from '@mikro-orm/postgresql';
+import { EntityManager, EntityRepository } from '@mikro-orm/postgresql';
 import { Injectable } from '@nestjs/common';
 import { AuditLogEntity } from './audit-log.entity';
+import { InjectRepository } from '@mikro-orm/nestjs';
 
 export interface AuditContext {
   actorId?: string;
@@ -9,7 +10,10 @@ export interface AuditContext {
 
 @Injectable()
 export class AuditService {
-  constructor(private readonly em: EntityManager) {}
+  constructor(
+    @InjectRepository(AuditLogEntity)
+    private readonly repo: EntityRepository<AuditLogEntity>,
+  ) {}
 
   async log(
     entityType: string,
@@ -18,7 +22,7 @@ export class AuditService {
     entityId?: string,
     ctx?: AuditContext,
   ): Promise<void> {
-    const entry = this.em.create(AuditLogEntity, {
+    const entry = this.repo.create({
       entityType,
       entityId: entityId ?? null,
       action,
@@ -27,7 +31,7 @@ export class AuditService {
       actorRole: ctx?.actorRole ?? null,
       createdAt: new Date(),
     });
-    this.em.persist(entry);
-    await this.em.flush();
+    this.repo.getEntityManager().persist(entry);
+    await this.repo.getEntityManager().flush();
   }
 }

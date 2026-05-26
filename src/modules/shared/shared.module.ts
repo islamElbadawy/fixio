@@ -1,8 +1,8 @@
-import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Global, Module } from '@nestjs/common';
+import { EventEmitterModule, EventEmitter2 } from '@nestjs/event-emitter';
+import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { AuditLogEntity } from './infrastructure/audit/audit-log.entity';
 import { AuditService } from './infrastructure/audit/audit.service';
-import { EventEmitter2, EventEmitterModule } from '@nestjs/event-emitter';
 import { DOMAIN_EVENT_BUS } from './contracts/domain-event-bus.interface';
 import { DomainEvent } from './domain/events/domain-event.base';
 
@@ -19,7 +19,7 @@ import { DomainEvent } from './domain/events/domain-event.base';
     AuditService,
     {
       provide: DOMAIN_EVENT_BUS,
-      useFactory: (emitter) => ({
+      useFactory: (emitter: EventEmitter2) => ({
         async publish(event: DomainEvent): Promise<void> {
           emitter.emit(event.eventName, event);
         },
