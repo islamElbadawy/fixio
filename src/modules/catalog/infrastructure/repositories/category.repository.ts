@@ -38,11 +38,13 @@ export class CategoryRepository implements ICategoryRepository {
       },
     );
   }
-  save(category: CategoryEntity): Promise<void> {
+  async save(category: CategoryEntity): Promise<void> {
     this.repo.getEntityManager().persist(category);
-    return this.repo.getEntityManager().flush();
+    return await this.repo.getEntityManager().flush();
   }
   create(data: Partial<CategoryEntity>): CategoryEntity {
-    return this.repo.getEntityManager().create(CategoryEntity, data as CategoryEntity);
+    return this.repo
+      .getEntityManager()
+      .create(CategoryEntity, data as CategoryEntity);
   }
 }
