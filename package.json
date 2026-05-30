@@ -20,7 +20,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "migration:create": "mikro-orm migration:create",
     "migration:up": "tsx src/database/migrate.ts",
-    "seed": "tsx src/database/seed.ts",
+    "seed:catalog": "tsx src/database/seeds/catalog.seed.ts",
     "migration:down": "mikro-orm migration:down"
   },
   "mikro-orm": {

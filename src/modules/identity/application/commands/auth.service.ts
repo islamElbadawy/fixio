@@ -1,4 +1,7 @@
 import { Inject, Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
+
+// Lightweight local type to avoid depending on external jsonwebtoken types here
+type JwtSignOptions = { expiresIn?: string | number; secret?: string };
 import { UserRole } from '../../domain/entities/role.enum';
 import {
   IUserRepository,
@@ -116,11 +119,20 @@ export class AuthService {
       'jwt.refreshExpiresIn',
     ) as string;
 
-    const payload: any = { sub: userId, email, role };
+    interface AuthPayload {
+      sub: string;
+      email: string;
+      role: UserRole;
+    }
+
+    const payload: AuthPayload = { sub: userId, email, role };
+
+    const accessOpts: JwtSignOptions = { expiresIn: accessExpiresIn };
+    const refreshOpts: JwtSignOptions = { expiresIn: refreshExpiresIn };
 
     const [accessToken, refreshToken] = await Promise.all([
-      this.jwtService.signAsync(payload, { secret: accessSecret, expiresIn: accessExpiresIn } as any),
-      this.jwtService.signAsync(payload, { secret: refreshSecret, expiresIn: refreshExpiresIn } as any),
+      this.jwtService.signAsync(payload, { ...(accessOpts as object), secret: accessSecret } as any),
+      this.jwtService.signAsync(payload, { ...(refreshOpts as object), secret: refreshSecret } as any),
     ]);
 
     return {
