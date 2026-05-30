@@ -1,5 +1,5 @@
 import { MikroORM } from '@mikro-orm/postgresql';
-import { RequiredEntityData, ref } from '@mikro-orm/core';
+import { EntityData, ref, RequiredEntityData } from '@mikro-orm/core';
 import { CategoryEntity } from '../../modules/catalog/domain/entities/category.entity';
 import { ProductTemplateEntity } from '../../modules/catalog/domain/entities/product-template.entity';
 import { ProductVariantEntity } from '../../modules/catalog/domain/entities/product-variant.entity';
@@ -10,8 +10,8 @@ async function seedCatalog() {
     entitiesTs: ['src/**/*.entity.ts'],
     host: process.env.DB_HOST ?? 'localhost',
     port: parseInt(process.env.DB_PORT ?? '5432', 10),
-    user: process.env.DB_USERNAME ?? 'postgres',
-    password: process.env.DB_PASSWORD ?? '',
+    user: process.env.DB_USERNAME ?? 'openpg',
+    password: process.env.DB_PASSWORD ?? 'openpgpwd',
     dbName: process.env.DB_NAME ?? 'fixio_db',
   });
 
@@ -21,7 +21,7 @@ async function seedCatalog() {
 
   // ─── Categories ───────────────────────────────────────────
 
-  const categoriesData: RequiredEntityData<CategoryEntity>[] = [
+  const categoriesData: EntityData<CategoryEntity>[] = [
     {
       name: 'Engine Parts',
       slug: 'engine-parts',
@@ -85,7 +85,12 @@ async function seedCatalog() {
       categories[data.slug as string] = existing;
       continue;
     }
-    const cat = em.create(CategoryEntity, data);
+    const cat = em.create(CategoryEntity, {
+      ...data,
+      isActive: true,
+      createdAt: new Date(),
+      isDeleted: false,
+    } as RequiredEntityData<CategoryEntity>);
     em.persist(cat);
     categories[data.slug as string] = cat;
     console.log(`✓ Category: ${data.name}`);
@@ -95,7 +100,7 @@ async function seedCatalog() {
 
   // ─── Product Templates ────────────────────────────────────
 
-  const templatesData: RequiredEntityData<ProductTemplateEntity>[] = [
+  const templatesData: EntityData<ProductTemplateEntity>[] = [
     {
       name: 'Oil Filter',
       slug: 'oil-filter',
@@ -270,7 +275,12 @@ async function seedCatalog() {
       templates[data.slug as string] = existing;
       continue;
     }
-    const t = em.create(ProductTemplateEntity, data);
+    const t = em.create(ProductTemplateEntity, {
+      ...data,
+      isActive: true,
+      createdAt: new Date(),
+      isDeleted: false,
+    } as RequiredEntityData<ProductTemplateEntity>);
     em.persist(t);
     templates[data.slug as string] = t;
     console.log(`✓ Template: ${data.name}`);
@@ -280,7 +290,7 @@ async function seedCatalog() {
 
   // ─── Product Variants ─────────────────────────────────────
 
-  const variantsData: RequiredEntityData<ProductVariantEntity>[] = [
+  const variantsData: EntityData<ProductVariantEntity>[] = [
     // Oil Filters
     {
       sku: 'OIL-FLT-001',
@@ -749,7 +759,12 @@ async function seedCatalog() {
       console.log(`⚠  Skipping variant: ${data.sku}`);
       continue;
     }
-    const v = em.create(ProductVariantEntity, data);
+    const v = em.create(ProductVariantEntity, {
+      ...data,
+      isActive: true,
+      createdAt: new Date(),
+      isDeleted: false,
+    } as RequiredEntityData<ProductVariantEntity>);
     em.persist(v);
     console.log(`✓ Variant: ${data.sku}`);
   }
