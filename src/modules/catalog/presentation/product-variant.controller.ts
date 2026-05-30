@@ -10,6 +10,7 @@ import {
   HttpCode,
   HttpStatus,
   Query,
+  BadRequestException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -64,7 +65,12 @@ export class ProductVariantController {
       'JSON string of spec filters e.g. {"compatibility":"Toyota Corolla"}',
   })
   searchVariantsBySpecs(@Query('filters') filtersJson: string) {
-    const filters = JSON.parse(filtersJson);
+    let filters: Record<string, unknown>;
+    try {
+      filters = JSON.parse(filtersJson);
+    } catch (e) {
+      throw new BadRequestException('Invalid JSON in filters query parameter');
+    }
     return this.queries.getVariantsBySpecs(filters);
   }
 
