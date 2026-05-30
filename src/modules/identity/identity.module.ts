@@ -12,7 +12,7 @@ import { JwtRefreshStrategy } from './infrastructure/guards/jwt-refresh.strategy
 import { JwtAuthGuard } from './infrastructure/guards/jwt-auth.guard';
 import { JwtRefreshGuard } from './infrastructure/guards/jwt-refresh.guard';
 import { RolesGuard } from './infrastructure/guards/roles.guard';
-import { AuthController } from './presentaion/auth.controller';
+import { AuthController } from './presentation/auth.controller';
 
 @Module({
   imports: [

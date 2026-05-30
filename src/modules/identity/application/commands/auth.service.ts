@@ -1,4 +1,4 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
 import { UserRole } from '../../domain/entities/role.enum';
 import {
   IUserRepository,
@@ -31,7 +31,7 @@ export class AuthService {
   ): Promise<{ id: string; email: string; role: UserRole }> {
     const existingUser = await this.userRepository.findByEmail(dto.email);
     if (existingUser) {
-      throw new Error('Email already in use');
+      throw new ConflictException('Email already in use');
     }
 
     const passwordHash = await bcrypt.hash(dto.password, 12);
@@ -105,12 +105,6 @@ export class AuthService {
     email: string,
     role: UserRole,
   ): Promise<TokenResponseDto> {
-    const payload: JwtPayload = {
-      sub: userId,
-      email,
-      role,
-    };
-
     const accessSecret = this.config.get<string>('jwt.accessSecret') as string;
     const refreshSecret = this.config.get<string>(
       'jwt.refreshSecret',
@@ -122,15 +116,11 @@ export class AuthService {
       'jwt.refreshExpiresIn',
     ) as string;
 
+    const payload: any = { sub: userId, email, role };
+
     const [accessToken, refreshToken] = await Promise.all([
-      this.jwtService.signAsync(
-        { sub: userId, email, role },
-        { secret: accessSecret, expiresIn: '15m' },
-      ),
-      this.jwtService.signAsync(
-        { sub: userId, email, role },
-        { secret: refreshSecret, expiresIn: '7d' },
-      ),
+      this.jwtService.signAsync(payload, { secret: accessSecret, expiresIn: accessExpiresIn } as any),
+      this.jwtService.signAsync(payload, { secret: refreshSecret, expiresIn: refreshExpiresIn } as any),
     ]);
 
     return {
