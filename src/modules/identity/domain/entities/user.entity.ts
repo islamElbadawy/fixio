@@ -14,25 +14,30 @@ export class UserEntity {
   id: string = uuidv4();
 
   @Index({ name: 'idx_users_email' })
-  @Property({ length: 255, unique: true })
+  @Property({ type: 'string', length: 255, unique: true })
   email!: string;
 
-  @Property({ length: 255, fieldName: 'password_hash' })
+  @Property({ type: 'string', length: 255, fieldName: 'password_hash' })
   passwordHash!: string;
 
-  @Property({ length: 100, fieldName: 'full_name' })
+  @Property({ type: 'string', length: 100, fieldName: 'full_name' })
   fullName!: string;
 
   @Enum({ items: () => UserRole, default: UserRole.SALES_EMPLOYEE })
   role: UserRole = UserRole.SALES_EMPLOYEE;
 
-  @Property({ default: true, fieldName: 'is_active' })
+  @Property({ type: 'boolean', default: true, fieldName: 'is_active' })
   isActive: boolean = true;
 
-  @Property({ length: 255, nullable: true, fieldName: 'refresh_token_hash' })
+  @Property({
+    type: 'string',
+    length: 255,
+    nullable: true,
+    fieldName: 'refresh_token_hash',
+  })
   refreshTokenHash: string | null = null;
 
-  @Property({ default: false, fieldName: 'is_deleted' })
+  @Property({ type: 'boolean', default: false, fieldName: 'is_deleted' })
   isDeleted: boolean = false;
 
   @Property({ type: 'timestamptz', nullable: true, fieldName: 'deleted_at' })

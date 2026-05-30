@@ -6,6 +6,7 @@ import { TsMorphMetadataProvider } from '@mikro-orm/reflection';
 import { SharedModule } from './modules/shared/shared.module';
 import { IdentityModule } from './modules/identity/identity.module';
 import { PostgreSqlDriver } from '@mikro-orm/postgresql';
+import { CatalogModule } from './modules/catalog/catalog.module';
 
 @Module({
   imports: [
@@ -29,7 +30,8 @@ import { PostgreSqlDriver } from '@mikro-orm/postgresql';
       }),
     }),
     SharedModule,
-    IdentityModule
+    IdentityModule,
+    CatalogModule,
   ],
   controllers: [],
   providers: [],
