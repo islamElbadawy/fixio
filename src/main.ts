@@ -3,6 +3,9 @@ import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -24,8 +27,22 @@ async function bootstrap() {
 
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
-  app.enableCors();
+  app.use((cookieParser as any)());
   app.enableShutdownHooks();
+
+  if (process.env.NODE_ENV === 'production') {
+    app.use(helmet());
+    const origin = config.get<string>('app.frontendOrigin') ?? process.env.FRONTEND_ORIGIN;
+    app.enableCors({ origin, credentials: true });
+    app.use(
+      rateLimit({
+        windowMs: 15 * 60 * 1000,
+        max: 200,
+      }),
+    );
+  } else {
+    app.enableCors();
+  }
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Fixio API')
@@ -44,7 +61,9 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup('api/docs', app, document);
+  if (process.env.NODE_ENV !== 'production') {
+    SwaggerModule.setup('api/docs', app, document);
+  }
 
   await app.listen(config.get('app.port') ?? 5000);
 

@@ -6,7 +6,11 @@ import {
   HttpStatus,
   Post,
   UseGuards,
+  Res,
 } from '@nestjs/common';
+import { Response } from 'express';
+import { ConfigService } from '@nestjs/config';
+const ms = require('ms');
 import { AuthService } from '../application/commands/auth.service';
 import { JwtAuthGuard } from '../infrastructure/guards/jwt-auth.guard';
 import { RolesGuard } from '../infrastructure/guards/roles.guard';
@@ -27,7 +31,10 @@ export interface AuthenticatedUser {
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly config: ConfigService,
+  ) {}
 
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
@@ -49,8 +56,19 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'Login successful', type: TokenResponseDto })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @HttpCode(HttpStatus.OK)
-  login(@Body() dto: LoginDto): Promise<TokenResponseDto> {
-    return this.authService.login(dto);
+  async login(@Body() dto: LoginDto, @Res({ passthrough: true }) res: Response): Promise<{ accessToken: string; expiresIn: number }> {
+    const tokens = await this.authService.login(dto);
+    // set refresh token as secure HttpOnly cookie
+    const refreshExpires = this.config.get<string>('jwt.refreshExpiresIn') ?? '7d';
+    const cookieMaxAge = Math.max(0, Number(ms(refreshExpires)));
+    res.cookie('refreshToken', tokens.refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: cookieMaxAge,
+    });
+
+    return { accessToken: tokens.accessToken, expiresIn: tokens.expiresIn };
   }
 
   @Post('refresh')

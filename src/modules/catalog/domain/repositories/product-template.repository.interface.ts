@@ -13,6 +13,6 @@ export interface IProductRepository {
     variantId: string,
   ): Promise<{ template: ProductTemplate; variant: any } | null>;
   findVariantBySku(sku: string): Promise<ProductTemplate | null>;
-  findVariantsBySpecs(filters: Record<string, unknown>): Promise<any[]>;
+  findVariantsBySpecs(filters: Record<string, unknown>, limit?: number, offset?: number): Promise<any[]>;
   save(template: ProductTemplate): Promise<void>;
 }

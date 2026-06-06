@@ -60,10 +60,28 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
+    // Account lockout check
+    if (user.lockedUntil && user.lockedUntil > new Date()) {
+      throw new UnauthorizedException('Account locked due to multiple failed login attempts');
+    }
+
     const isMatch = await bcrypt.compare(dto.password, user.passwordHash);
     if (!isMatch) {
+      // Increment failed attempts and potentially lock account
+      user.failedLoginAttempts = (user.failedLoginAttempts ?? 0) + 1;
+      const MAX_ATTEMPTS = 5;
+      const LOCK_MINUTES = 15;
+      if (user.failedLoginAttempts >= MAX_ATTEMPTS) {
+        user.lockedUntil = new Date(Date.now() + LOCK_MINUTES * 60 * 1000);
+      }
+      await this.userRepository.save(user);
       throw new UnauthorizedException('Invalid credentials');
     }
+
+    // Reset failed attempts on successful login
+    user.failedLoginAttempts = 0;
+    user.lockedUntil = null;
+    await this.userRepository.save(user);
 
     const tokens = await this.generateTokens(user.id, user.email, user.role);
     await this.storeRefreshToken(user.id, tokens.refreshToken);

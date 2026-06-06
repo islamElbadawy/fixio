@@ -15,6 +15,6 @@ export class GetVariantsBySpecsHandler implements IQueryHandler<GetVariantsBySpe
   ) {}
 
   async execute(query: GetVariantsBySpecsQuery): Promise<ProductVariant[]> {
-    return this.productRepo.findVariantsBySpecs(query.filters);
+    return this.productRepo.findVariantsBySpecs(query.filters, query.limit, query.offset);
   }
 }

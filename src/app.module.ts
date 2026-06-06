@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import * as Joi from 'joi';
 import { appConfig, dbConfig, jwtConfig } from './config/app.config';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { TsMorphMetadataProvider } from '@mikro-orm/reflection';
@@ -14,6 +15,16 @@ import { CatalogModule } from './modules/catalog/catalog.module';
       isGlobal: true,
       load: [appConfig, dbConfig, jwtConfig],
       envFilePath: '.env',
+      validationSchema: Joi.object({
+        NODE_ENV: Joi.string().valid('development', 'production', 'test').default('development'),
+        JWT_ACCESS_SECRET: Joi.string().min(32).required(),
+        JWT_REFRESH_SECRET: Joi.string().min(32).required(),
+        DB_HOST: Joi.string().required(),
+        DB_PORT: Joi.number().required(),
+        DB_USERNAME: Joi.string().required(),
+        DB_PASSWORD: Joi.when('NODE_ENV', { is: 'production', then: Joi.string().min(8).required(), otherwise: Joi.string().allow('') }),
+        FRONTEND_ORIGIN: Joi.string().uri().required(),
+      }),
     }),
     MikroOrmModule.forRootAsync({
       inject: [ConfigService],

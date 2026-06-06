@@ -70,14 +70,16 @@ export class ProductVariantController {
     description:
       'JSON string of spec filters e.g. {"compatibility":"Toyota Corolla"}',
   })
-  searchVariantsBySpecs(@Query('filters') filtersJson: string) {
+  searchVariantsBySpecs(@Query('filters') filtersJson: string, @Query('limit') limit?: string, @Query('offset') offset?: string) {
     let filters: Record<string, unknown>;
     try {
       filters = JSON.parse(filtersJson);
     } catch (e) {
       throw new BadRequestException('Invalid JSON in filters query parameter');
     }
-    return this.queryBus.execute(new GetVariantsBySpecsQuery(filters));
+    const l = limit ? parseInt(limit, 10) : undefined;
+    const o = offset ? parseInt(offset, 10) : undefined;
+    return this.queryBus.execute(new GetVariantsBySpecsQuery(filters, l, o));
   }
 
   @Get('variants/:id')
@@ -96,7 +98,9 @@ export class ProductVariantController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Search variants by specs (POST body)' })
   searchVariantsBySpecsPost(@Body() dto: FilterVariantBySpecsDto) {
-    return this.queryBus.execute(new GetVariantsBySpecsQuery(dto.filters));
+    const l = dto.limit;
+    const o = dto.offset;
+    return this.queryBus.execute(new GetVariantsBySpecsQuery(dto.filters, l, o));
   }
 
   @Patch('variants/:id')

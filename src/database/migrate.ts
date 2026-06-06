@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { MikroORM } from '@mikro-orm/postgresql';
 import config from '../../mikro-orm.config';
 

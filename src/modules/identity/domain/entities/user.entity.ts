@@ -29,6 +29,12 @@ export class UserEntity {
   @Property({ type: 'boolean', default: true, fieldName: 'is_active' })
   isActive: boolean = true;
 
+  @Property({ type: 'number', default: 0, fieldName: 'failed_login_attempts' })
+  failedLoginAttempts: number = 0;
+
+  @Property({ type: 'timestamptz', nullable: true, fieldName: 'locked_until' })
+  lockedUntil: Date | null = null;
+
   @Property({
     type: 'string',
     length: 255,

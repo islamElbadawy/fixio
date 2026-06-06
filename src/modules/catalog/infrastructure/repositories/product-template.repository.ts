@@ -70,12 +70,22 @@ export class ProductRepository implements IProductRepository {
 
   async findVariantsBySpecs(
     filters: Record<string, unknown>,
+    limit = 50,
+    offset = 0,
   ): Promise<ProductVariant[]> {
+    const allowed = ['compatibility', 'brand', 'year'];
+    const safeFilters: Record<string, unknown> = {};
+    for (const k of Object.keys(filters || {})) {
+      if (allowed.includes(k)) safeFilters[k] = filters[k];
+    }
+
     const em = this.repo.getEntityManager();
     return em
       .createQueryBuilder(ProductVariant, 'v')
       .where({ isDeleted: false, isActive: true })
-      .andWhere(`v.specs @> '${JSON.stringify(filters)}'::jsonb`)
+      .andWhere('v.specs @> ?::jsonb', [JSON.stringify(safeFilters)])
+      .limit(Math.min(limit, 100))
+      .offset(Math.max(0, offset))
       .getResultList();
   }
 

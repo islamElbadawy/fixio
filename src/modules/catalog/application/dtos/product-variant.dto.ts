@@ -102,4 +102,17 @@ export class FilterVariantBySpecsDto {
   })
   @IsObject()
   filters!: Record<string, unknown>;
+
+  @ApiPropertyOptional({ example: 50, description: 'Maximum number of results to return' })
+  @IsOptional()
+  @IsNumber()
+  @IsPositive()
+  @Type(() => Number)
+  limit?: number;
+
+  @ApiPropertyOptional({ example: 0, description: 'Result offset for pagination' })
+  @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
+  offset?: number;
 }
