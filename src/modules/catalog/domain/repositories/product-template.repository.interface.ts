@@ -1,11 +1,18 @@
-import { ProductTemplateEntity } from '../entities/product-template.entity';
+import { ProductTemplate } from '../entities/product-template.entity';
 
-export const PRODUCT_TEMPLATE_REPOSITORY = Symbol('IProductTemplateRepository');
+export const PRODUCT_REPOSITORY = Symbol('IProductRepository');
 
-export interface IProductTemplateRepository {
-  findById(id: string): Promise<ProductTemplateEntity | null>;
-  findBySlug(slug: string): Promise<ProductTemplateEntity | null>;
-  findAll(categoryId?: string): Promise<ProductTemplateEntity[]>;
-  save(template: ProductTemplateEntity): Promise<void>;
-  create(data: Partial<ProductTemplateEntity>): ProductTemplateEntity;
+export interface IProductRepository {
+  findById(
+    id: string,
+    populateVariants?: boolean,
+  ): Promise<ProductTemplate | null>;
+  findBySlug(slug: string): Promise<ProductTemplate | null>;
+  findAll(categoryId?: string): Promise<ProductTemplate[]>;
+  findVariantById(
+    variantId: string,
+  ): Promise<{ template: ProductTemplate; variant: any } | null>;
+  findVariantBySku(sku: string): Promise<ProductTemplate | null>;
+  findVariantsBySpecs(filters: Record<string, unknown>): Promise<any[]>;
+  save(template: ProductTemplate): Promise<void>;
 }
