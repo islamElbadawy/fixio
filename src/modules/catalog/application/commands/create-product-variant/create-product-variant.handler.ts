@@ -2,50 +2,51 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject, ConflictException, NotFoundException } from '@nestjs/common';
 import { CreateProductVariantCommand } from './create-product-variant.command';
 import {
-  IProductVariantRepository,
-  PRODUCT_VARIANT_REPOSITORY,
-} from '../../../domain/repositories/product-variant.repository.interface';
-import {
-  IProductTemplateRepository,
-  PRODUCT_TEMPLATE_REPOSITORY,
+  IProductRepository,
+  PRODUCT_REPOSITORY,
 } from '../../../domain/repositories/product-template.repository.interface';
-import { ProductVariantEntity } from '../../../domain/entities/product-variant.entity';
+import {
+  IDomainEventBus,
+  DOMAIN_EVENT_BUS,
+} from '../../../../shared/contracts/domain-event-bus.interface';
+import { ProductVariant } from '../../../domain/entities/product-variant.entity';
 
 @CommandHandler(CreateProductVariantCommand)
 export class CreateProductVariantHandler implements ICommandHandler<CreateProductVariantCommand> {
   constructor(
-    @Inject(PRODUCT_VARIANT_REPOSITORY)
-    private readonly variantRepo: IProductVariantRepository,
-    @Inject(PRODUCT_TEMPLATE_REPOSITORY)
-    private readonly templateRepo: IProductTemplateRepository,
+    @Inject(PRODUCT_REPOSITORY)
+    private readonly productRepo: IProductRepository,
+    @Inject(DOMAIN_EVENT_BUS)
+    private readonly eventBus: IDomainEventBus,
   ) {}
 
-  async execute(
-    command: CreateProductVariantCommand,
-  ): Promise<ProductVariantEntity> {
+  async execute(command: CreateProductVariantCommand): Promise<ProductVariant> {
     const { dto } = command;
 
-    const existingSku = await this.variantRepo.findBySku(dto.sku);
-    if (existingSku)
+    const existingTemplate = await this.productRepo.findVariantBySku(dto.sku);
+    if (existingTemplate)
       throw new ConflictException(`SKU "${dto.sku}" is already in use`);
 
-    const template = await this.templateRepo.findById(dto.templateId);
+    const template = await this.productRepo.findById(dto.templateId, true);
     if (!template)
       throw new NotFoundException(
         `Product template ${dto.templateId} not found`,
       );
 
-    const variant = this.variantRepo.create({
-      sku: dto.sku,
-      name: dto.name ?? null,
-      purchasePrice: dto.purchasePrice,
-      sellingPrice: dto.sellingPrice,
-      specs: dto.specs ?? {},
-      unit: dto.unit ?? null,
-      template,
-    });
+    const variant = template.addVariant(
+      dto.sku,
+      dto.purchasePrice,
+      dto.sellingPrice,
+      dto.specs ?? {},
+      dto.name,
+      dto.unit,
+    );
 
-    await this.variantRepo.save(variant);
+    await this.productRepo.save(template);
+
+    await this.eventBus.publishAll(template.domainEvents);
+    template.clearDomainEvents();
+
     return variant;
   }
 }

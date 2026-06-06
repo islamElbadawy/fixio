@@ -2,24 +2,34 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject, NotFoundException } from '@nestjs/common';
 import { RemoveProductVariantCommand } from './remove-product-variant.command';
 import {
-  IProductVariantRepository,
-  PRODUCT_VARIANT_REPOSITORY,
-} from '../../../domain/repositories/product-variant.repository.interface';
+  IProductRepository,
+  PRODUCT_REPOSITORY,
+} from '../../../domain/repositories/product-template.repository.interface';
+import {
+  IDomainEventBus,
+  DOMAIN_EVENT_BUS,
+} from '../../../../shared/contracts/domain-event-bus.interface';
 
 @CommandHandler(RemoveProductVariantCommand)
 export class RemoveProductVariantHandler implements ICommandHandler<RemoveProductVariantCommand> {
   constructor(
-    @Inject(PRODUCT_VARIANT_REPOSITORY)
-    private readonly variantRepo: IProductVariantRepository,
+    @Inject(PRODUCT_REPOSITORY)
+    private readonly productRepo: IProductRepository,
+    @Inject(DOMAIN_EVENT_BUS)
+    private readonly eventBus: IDomainEventBus,
   ) {}
 
   async execute(command: RemoveProductVariantCommand): Promise<void> {
-    const variant = await this.variantRepo.findById(command.id);
-    if (!variant)
+    const result = await this.productRepo.findVariantById(command.id);
+    if (!result)
       throw new NotFoundException(`Product variant ${command.id} not found`);
 
-    variant.isDeleted = true;
-    variant.deletedAt = new Date();
-    await this.variantRepo.save(variant);
+    const { template } = result;
+    template.removeVariant(command.id);
+
+    await this.productRepo.save(template);
+
+    await this.eventBus.publishAll(template.domainEvents);
+    template.clearDomainEvents();
   }
 }
