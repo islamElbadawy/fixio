@@ -10,7 +10,11 @@ export class JwtRefreshStrategy extends PassportStrategy(
   'jwt-refresh',
 ) {
   constructor(config: ConfigService) {
-    const cookieExtractor = (req: Request) => req?.cookies?.refreshToken;
+    const cookieExtractor = (req: Request) =>
+      req?.cookies?.refreshToken ||
+      (typeof req?.headers['x-refresh-token'] === 'string'
+        ? req.headers['x-refresh-token'] as string
+        : undefined);
     const opts: StrategyOptionsWithRequest = {
       jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor]),
       ignoreExpiration: false,

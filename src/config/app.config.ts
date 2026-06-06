@@ -4,6 +4,7 @@ export const appConfig = registerAs('app', () => ({
   nodeEnv: process.env.NODE_ENV || 'development',
   port: parseInt(process.env.PORT ?? '3000', 10),
   name: process.env.APP_NAME ?? 'Fixio',
+  frontendOrigin: process.env.FRONTEND_ORIGIN ?? 'http://localhost:4200',
 }));
 
 export const dbConfig = registerAs('database', () => ({
@@ -13,7 +14,6 @@ export const dbConfig = registerAs('database', () => ({
   password: process.env.DB_PASSWORD ?? '',
   name: process.env.DB_NAME ?? 'fixio_db',
 }));
-
 
 export const jwtConfig = registerAs('jwt', () => ({
   accessSecret: process.env.JWT_ACCESS_SECRET,

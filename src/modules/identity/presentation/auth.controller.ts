@@ -58,13 +58,12 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async login(@Body() dto: LoginDto, @Res({ passthrough: true }) res: Response): Promise<{ accessToken: string; expiresIn: number }> {
     const tokens = await this.authService.login(dto);
-    // set refresh token as secure HttpOnly cookie
     const refreshExpires = this.config.get<string>('jwt.refreshExpiresIn') ?? '7d';
     const cookieMaxAge = Math.max(0, Number(ms(refreshExpires)));
     res.cookie('refreshToken', tokens.refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: 'lax',
       maxAge: cookieMaxAge,
     });
 
@@ -89,7 +88,12 @@ export class AuthController {
   @ApiOperation({ summary: 'Logout from the system' })
   @ApiResponse({ status: 204, description: 'Logout successful' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  logout(@CurrentUser('id') userId: string): Promise<void> {
+  logout(@CurrentUser('id') userId: string, @Res({ passthrough: true }) res: Response): Promise<void> {
+    res.clearCookie('refreshToken', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+    });
     return this.authService.logout(userId);
   }
 

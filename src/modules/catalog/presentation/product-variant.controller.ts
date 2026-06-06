@@ -77,6 +77,24 @@ export class ProductVariantController {
     } catch (e) {
       throw new BadRequestException('Invalid JSON in filters query parameter');
     }
+
+    if (!filters || typeof filters !== 'object' || Array.isArray(filters)) {
+      throw new BadRequestException('Filters must be a JSON object');
+    }
+
+    const allowedKeys = ['compatibility', 'brand', 'year'];
+    const keys = Object.keys(filters);
+    if (keys.length === 0) {
+      throw new BadRequestException('At least one filter key is required');
+    }
+    if (keys.length > 10) {
+      throw new BadRequestException('Too many filter keys');
+    }
+    const invalidKeys = keys.filter((key) => !allowedKeys.includes(key));
+    if (invalidKeys.length > 0) {
+      throw new BadRequestException(`Invalid filter keys: ${invalidKeys.join(', ')}`);
+    }
+
     const l = limit ? parseInt(limit, 10) : undefined;
     const o = offset ? parseInt(offset, 10) : undefined;
     return this.queryBus.execute(new GetVariantsBySpecsQuery(filters, l, o));

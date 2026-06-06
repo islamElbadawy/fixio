@@ -1,6 +1,8 @@
-import 'dotenv/config';
+import { config as loadEnv } from 'dotenv';
 import { MikroORM } from '@mikro-orm/postgresql';
 import config from '../../mikro-orm.config';
+
+loadEnv({ path: process.env.ENV_FILE_PATH ?? '.env' });
 
 async function migrate() {
   const orm = await MikroORM.init(config as any);

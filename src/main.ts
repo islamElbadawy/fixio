@@ -30,9 +30,9 @@ async function bootstrap() {
   app.use((cookieParser as any)());
   app.enableShutdownHooks();
 
+  const origin = config.get<string>('app.frontendOrigin') ?? process.env.FRONTEND_ORIGIN;
   if (process.env.NODE_ENV === 'production') {
     app.use(helmet());
-    const origin = config.get<string>('app.frontendOrigin') ?? process.env.FRONTEND_ORIGIN;
     app.enableCors({ origin, credentials: true });
     app.use(
       rateLimit({
@@ -41,7 +41,7 @@ async function bootstrap() {
       }),
     );
   } else {
-    app.enableCors();
+    app.enableCors({ origin: true, credentials: true });
   }
 
   const swaggerConfig = new DocumentBuilder()
