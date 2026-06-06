@@ -4,6 +4,7 @@ import {
   ManyToOne,
   OneToMany,
   Index,
+  PrimaryKey,
 } from '@mikro-orm/decorators/legacy';
 import { Collection, Rel } from '@mikro-orm/core';
 import { Exclude } from 'class-transformer';
@@ -19,6 +20,7 @@ import { AggregateRootBase } from 'src/modules/shared/infrastructure/database/ag
 
 @Entity({ tableName: 'product_templates' })
 export class ProductTemplate extends AggregateRootBase {
+  @PrimaryKey({ type: 'uuid' })
   @Property({ type: 'uuid' })
   id: string = uuidv4();
 
