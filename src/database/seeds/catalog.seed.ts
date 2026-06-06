@@ -1,8 +1,8 @@
 import { MikroORM } from '@mikro-orm/postgresql';
 import { EntityData, ref, RequiredEntityData } from '@mikro-orm/core';
 import { CategoryEntity } from '../../modules/catalog/domain/entities/category.entity';
-import { ProductTemplateEntity } from '../../modules/catalog/domain/entities/product-template.entity';
-import { ProductVariantEntity } from '../../modules/catalog/domain/entities/product-variant.entity';
+import { ProductTemplate } from '../../modules/catalog/domain/entities/product-template.entity';
+import { ProductVariant } from '../../modules/catalog/domain/entities/product-variant.entity';
 
 async function seedCatalog() {
   const orm = await MikroORM.init({
@@ -100,7 +100,7 @@ async function seedCatalog() {
 
   // ─── Product Templates ────────────────────────────────────
 
-  const templatesData: EntityData<ProductTemplateEntity>[] = [
+  const templatesData: EntityData<ProductTemplate>[] = [
     {
       name: 'Oil Filter',
       slug: 'oil-filter',
@@ -264,10 +264,10 @@ async function seedCatalog() {
     },
   ];
 
-  const templates: Record<string, ProductTemplateEntity> = {};
+  const templates: Record<string, ProductTemplate> = {};
 
   for (const data of templatesData) {
-    const existing = await em.findOne(ProductTemplateEntity, {
+    const existing = await em.findOne(ProductTemplate, {
       slug: data.slug as string,
     });
     if (existing) {
@@ -275,12 +275,12 @@ async function seedCatalog() {
       templates[data.slug as string] = existing;
       continue;
     }
-    const t = em.create(ProductTemplateEntity, {
+    const t = em.create(ProductTemplate, {
       ...data,
       isActive: true,
       createdAt: new Date(),
       isDeleted: false,
-    } as RequiredEntityData<ProductTemplateEntity>);
+    } as RequiredEntityData<ProductTemplate>);
     em.persist(t);
     templates[data.slug as string] = t;
     console.log(`✓ Template: ${data.name}`);
@@ -290,7 +290,7 @@ async function seedCatalog() {
 
   // ─── Product Variants ─────────────────────────────────────
 
-  const variantsData: EntityData<ProductVariantEntity>[] = [
+  const variantsData: EntityData<ProductVariant>[] = [
     // Oil Filters
     {
       sku: 'OIL-FLT-001',
@@ -752,19 +752,19 @@ async function seedCatalog() {
   console.log('\n🔩 Seeding variants...\n');
 
   for (const data of variantsData) {
-    const existing = await em.findOne(ProductVariantEntity, {
+    const existing = await em.findOne(ProductVariant, {
       sku: data.sku as string,
     });
     if (existing) {
       console.log(`⚠  Skipping variant: ${data.sku}`);
       continue;
     }
-    const v = em.create(ProductVariantEntity, {
+    const v = em.create(ProductVariant, {
       ...data,
       isActive: true,
       createdAt: new Date(),
       isDeleted: false,
-    } as RequiredEntityData<ProductVariantEntity>);
+    } as RequiredEntityData<ProductVariant>);
     em.persist(v);
     console.log(`✓ Variant: ${data.sku}`);
   }

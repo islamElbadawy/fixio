@@ -2,32 +2,24 @@ import { QueryHandler, IQueryHandler } from '@nestjs/cqrs';
 import { Inject, NotFoundException } from '@nestjs/common';
 import { GetVariantsByTemplateQuery } from './get-variants-by-template.query';
 import {
-  IProductVariantRepository,
-  PRODUCT_VARIANT_REPOSITORY,
-} from '../../../domain/repositories/product-variant.repository.interface';
-import {
-  IProductTemplateRepository,
-  PRODUCT_TEMPLATE_REPOSITORY,
+  IProductRepository,
+  PRODUCT_REPOSITORY,
 } from '../../../domain/repositories/product-template.repository.interface';
-import { ProductVariantEntity } from '../../../domain/entities/product-variant.entity';
+import { ProductVariant } from '../../../domain/entities/product-variant.entity';
 
 @QueryHandler(GetVariantsByTemplateQuery)
 export class GetVariantsByTemplateHandler implements IQueryHandler<GetVariantsByTemplateQuery> {
   constructor(
-    @Inject(PRODUCT_VARIANT_REPOSITORY)
-    private readonly variantRepo: IProductVariantRepository,
-    @Inject(PRODUCT_TEMPLATE_REPOSITORY)
-    private readonly templateRepo: IProductTemplateRepository,
+    @Inject(PRODUCT_REPOSITORY)
+    private readonly productRepo: IProductRepository,
   ) {}
 
-  async execute(
-    query: GetVariantsByTemplateQuery,
-  ): Promise<ProductVariantEntity[]> {
-    const template = await this.templateRepo.findById(query.templateId);
+  async execute(query: GetVariantsByTemplateQuery): Promise<ProductVariant[]> {
+    const template = await this.productRepo.findById(query.templateId, true);
     if (!template)
       throw new NotFoundException(
         `Product template ${query.templateId} not found`,
       );
-    return this.variantRepo.findByTemplate(query.templateId);
+    return template.variants.getItems();
   }
 }

@@ -2,19 +2,19 @@ import { QueryHandler, IQueryHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
 import { GetAllTemplatesQuery } from './get-all-templates.query';
 import {
-  IProductTemplateRepository,
-  PRODUCT_TEMPLATE_REPOSITORY,
+  IProductRepository,
+  PRODUCT_REPOSITORY,
 } from '../../../domain/repositories/product-template.repository.interface';
-import { ProductTemplateEntity } from '../../../domain/entities/product-template.entity';
+import { ProductTemplate } from '../../../domain/entities/product-template.entity';
 
 @QueryHandler(GetAllTemplatesQuery)
 export class GetAllTemplatesHandler implements IQueryHandler<GetAllTemplatesQuery> {
   constructor(
-    @Inject(PRODUCT_TEMPLATE_REPOSITORY)
-    private readonly templateRepo: IProductTemplateRepository,
+    @Inject(PRODUCT_REPOSITORY)
+    private readonly productRepo: IProductRepository,
   ) {}
 
-  async execute(query: GetAllTemplatesQuery): Promise<ProductTemplateEntity[]> {
-    return this.templateRepo.findAll(query.categoryId);
+  async execute(query: GetAllTemplatesQuery): Promise<ProductTemplate[]> {
+    return this.productRepo.findAll(query.categoryId);
   }
 }

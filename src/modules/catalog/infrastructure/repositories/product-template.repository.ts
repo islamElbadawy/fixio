@@ -1,48 +1,86 @@
-import { EntityRepository } from '@mikro-orm/core';
-import { InjectRepository } from '@mikro-orm/nestjs';
 import { Injectable } from '@nestjs/common';
-import { ProductTemplateEntity } from '../../domain/entities/product-template.entity';
-import { IProductTemplateRepository } from '../../domain/repositories/product-template.repository.interface';
+import { InjectRepository } from '@mikro-orm/nestjs';
+import { EntityRepository } from '@mikro-orm/postgresql';
+import { ProductTemplate } from '../../domain/entities/product-template.entity';
+import { ProductVariant } from '../../domain/entities/product-variant.entity';
+import { IProductRepository } from '../../domain/repositories/product-template.repository.interface';
 
 @Injectable()
-export class ProductTemplateRepository implements IProductTemplateRepository {
+export class ProductRepository implements IProductRepository {
   constructor(
-    @InjectRepository(ProductTemplateEntity)
-    private readonly repo: EntityRepository<ProductTemplateEntity>,
+    @InjectRepository(ProductTemplate)
+    private readonly repo: EntityRepository<ProductTemplate>,
+    @InjectRepository(ProductVariant)
+    private readonly variantRepo: EntityRepository<ProductVariant>,
   ) {}
 
-  findById(id: string): Promise<ProductTemplateEntity | null> {
+  findById(
+    id: string,
+    populateVariants = false,
+  ): Promise<ProductTemplate | null> {
     return this.repo.findOne(
       { id, isDeleted: false },
-      { populate: ['category'] },
+      {
+        populate: populateVariants ? ['category', 'variants'] : ['category'],
+      },
     );
   }
 
-  findBySlug(slug: string): Promise<ProductTemplateEntity | null> {
+  findBySlug(slug: string): Promise<ProductTemplate | null> {
     return this.repo.findOne(
       { slug, isDeleted: false },
       { populate: ['category'] },
     );
   }
 
-  findAll(categoryId?: string): Promise<ProductTemplateEntity[]> {
+  findAll(categoryId?: string): Promise<ProductTemplate[]> {
     const where: Record<string, unknown> = { isDeleted: false, isActive: true };
     if (categoryId) where['category'] = { id: categoryId };
-
     return this.repo.find(where, {
       populate: ['category'],
       orderBy: { name: 'ASC' },
     });
   }
 
-  async save(template: ProductTemplateEntity): Promise<void> {
-    this.repo.getEntityManager().persist(template);
-    return await this.repo.getEntityManager().flush();
+  async findVariantById(
+    variantId: string,
+  ): Promise<{ template: ProductTemplate; variant: ProductVariant } | null> {
+    const variant = await this.variantRepo.findOne(
+      { id: variantId, isDeleted: false },
+      { populate: ['template', 'template.category', 'template.variants'] },
+    );
+
+    if (!variant) return null;
+
+    return {
+      template: variant.template as unknown as ProductTemplate,
+      variant,
+    };
   }
 
-  create(data: Partial<ProductTemplateEntity>): ProductTemplateEntity {
-    return this.repo
-      .getEntityManager()
-      .create(ProductTemplateEntity, data as ProductTemplateEntity);
+  async findVariantBySku(sku: string): Promise<ProductTemplate | null> {
+    const variant = await this.variantRepo.findOne(
+      { sku, isDeleted: false },
+      { populate: ['template', 'template.variants'] },
+    );
+
+    if (!variant) return null;
+    return variant.template as unknown as ProductTemplate;
+  }
+
+  async findVariantsBySpecs(
+    filters: Record<string, unknown>,
+  ): Promise<ProductVariant[]> {
+    const em = this.repo.getEntityManager();
+    return em
+      .createQueryBuilder(ProductVariant, 'v')
+      .where({ isDeleted: false, isActive: true })
+      .andWhere(`v.specs @> '${JSON.stringify(filters)}'::jsonb`)
+      .getResultList();
+  }
+
+  async save(template: ProductTemplate): Promise<void> {
+    this.repo.getEntityManager().persist(template);
+    await this.repo.getEntityManager().flush();
   }
 }

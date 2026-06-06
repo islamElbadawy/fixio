@@ -5,12 +5,13 @@ import {
   Index,
 } from '@mikro-orm/decorators/legacy';
 import { Rel } from '@mikro-orm/core';
-import { BaseEntity } from '../../../shared/infrastructure/database/base.entity';
-import { ProductTemplateEntity } from './product-template.entity';
 import { Exclude } from 'class-transformer';
+import { v4 as uuidv4 } from 'uuid';
+import { BaseEntity } from '../../../shared/infrastructure/database/base.entity';
+import { DomainException } from '../../../shared/domain/exceptions/domain.exception';
 
 @Entity({ tableName: 'product_variants' })
-export class ProductVariantEntity extends BaseEntity {
+export class ProductVariant extends BaseEntity {
   @Index({ name: 'idx_variants_sku' })
   @Property({ type: 'string', length: 100, unique: true })
   sku!: string;
@@ -18,20 +19,10 @@ export class ProductVariantEntity extends BaseEntity {
   @Property({ type: 'string', length: 150, nullable: true })
   name: string | null = null;
 
-  @Property({
-    type: 'decimal',
-    precision: 10,
-    scale: 2,
-    fieldName: 'purchase_price',
-  })
+  @Property({ type: 'decimal', precision: 10, scale: 2, fieldName: 'purchase_price' })
   purchasePrice!: number;
 
-  @Property({
-    type: 'decimal',
-    precision: 10,
-    scale: 2,
-    fieldName: 'selling_price',
-  })
+  @Property({ type: 'decimal', precision: 10, scale: 2, fieldName: 'selling_price' })
   sellingPrice!: number;
 
   @Property({ type: 'jsonb', nullable: true, default: '{}' })
@@ -44,6 +35,27 @@ export class ProductVariantEntity extends BaseEntity {
   unit: string | null = null;
 
   @Exclude()
-  @ManyToOne(() => ProductTemplateEntity, { fieldName: 'template_id' })
-  template!: Rel<ProductTemplateEntity>;
+  @ManyToOne(() => ProductTemplate, { fieldName: 'template_id' })
+  template!: Rel<ProductTemplate>;
+
+  updatePrice(sellingPrice: number): void {
+    if (sellingPrice <= this.purchasePrice) {
+      throw new DomainException(
+        `Selling price ${sellingPrice} must exceed purchase price ${this.purchasePrice}`,
+      );
+    }
+    this.sellingPrice = sellingPrice;
+  }
+
+  updateSpecs(specs: Record<string, unknown>): void {
+    this.specs = { ...this.specs, ...specs };
+  }
+
+  deactivate(): void {
+    this.isActive = false;
+    this.isDeleted = true;
+    this.deletedAt = new Date();
+  }
 }
+
+import { ProductTemplate } from './product-template.entity';

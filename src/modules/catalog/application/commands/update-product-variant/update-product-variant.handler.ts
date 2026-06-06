@@ -2,36 +2,46 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject, NotFoundException } from '@nestjs/common';
 import { UpdateProductVariantCommand } from './update-product-variant.command';
 import {
-  IProductVariantRepository,
-  PRODUCT_VARIANT_REPOSITORY,
-} from '../../../domain/repositories/product-variant.repository.interface';
-import { ProductVariantEntity } from '../../../domain/entities/product-variant.entity';
+  IProductRepository,
+  PRODUCT_REPOSITORY,
+} from '../../../domain/repositories/product-template.repository.interface';
+import {
+  IDomainEventBus,
+  DOMAIN_EVENT_BUS,
+} from '../../../../shared/contracts/domain-event-bus.interface';
+import { ProductVariant } from '../../../domain/entities/product-variant.entity';
 
 @CommandHandler(UpdateProductVariantCommand)
 export class UpdateProductVariantHandler implements ICommandHandler<UpdateProductVariantCommand> {
   constructor(
-    @Inject(PRODUCT_VARIANT_REPOSITORY)
-    private readonly variantRepo: IProductVariantRepository,
+    @Inject(PRODUCT_REPOSITORY)
+    private readonly productRepo: IProductRepository,
+    @Inject(DOMAIN_EVENT_BUS)
+    private readonly eventBus: IDomainEventBus,
   ) {}
 
-  async execute(
-    command: UpdateProductVariantCommand,
-  ): Promise<ProductVariantEntity> {
+  async execute(command: UpdateProductVariantCommand): Promise<ProductVariant> {
     const { id, dto } = command;
 
-    const variant = await this.variantRepo.findById(id);
-    if (!variant)
-      throw new NotFoundException(`Product variant ${id} not found`);
+    const result = await this.productRepo.findVariantById(id);
+    if (!result) throw new NotFoundException(`Product variant ${id} not found`);
 
-    if (dto.name !== undefined) variant.name = dto.name ?? null;
-    if (dto.purchasePrice !== undefined)
-      variant.purchasePrice = dto.purchasePrice;
-    if (dto.sellingPrice !== undefined) variant.sellingPrice = dto.sellingPrice;
-    if (dto.unit !== undefined) variant.unit = dto.unit ?? null;
-    if (dto.isActive !== undefined) variant.isActive = dto.isActive;
-    if (dto.specs !== undefined) variant.specs = dto.specs;
+    const { template, variant } = result;
 
-    await this.variantRepo.save(variant);
-    return variant;
+    const updatedVariant = template.updateVariant(id, {
+      name: dto.name,
+      purchasePrice: dto.purchasePrice,
+      sellingPrice: dto.sellingPrice,
+      specs: dto.specs,
+      unit: dto.unit,
+      isActive: dto.isActive,
+    });
+
+    await this.productRepo.save(template);
+
+    await this.eventBus.publishAll(template.domainEvents);
+    template.clearDomainEvents();
+
+    return updatedVariant;
   }
 }
