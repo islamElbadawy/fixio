@@ -1,4 +1,4 @@
-import { DomainEvent } from 'src/modules/shared/domain/events/domain-event.base';
+import { DomainEvent } from '../../../shared/domain/events/domain-event.base'
 
 export class ProductVariantCreatedEvent extends DomainEvent {
   readonly eventName = 'catalog.product_variant_created';

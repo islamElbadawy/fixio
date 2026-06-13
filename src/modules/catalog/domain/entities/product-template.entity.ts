@@ -16,12 +16,11 @@ import { ProductTemplateCreatedEvent } from '../events/product-template-created.
 import { ProductVariantCreatedEvent } from '../events/product-variant-created.event';
 import { ProductVariantUpdatedEvent } from '../events/product-variant-updated.event';
 import { ProductVariantRemovedEvent } from '../events/product-variant-removed.event';
-import { AggregateRootBase } from 'src/modules/shared/infrastructure/database/aggregate-root.base';
+import { AggregateRootBase } from '../../../shared/infrastructure/database/aggregate-root.base';
 
 @Entity({ tableName: 'product_templates' })
 export class ProductTemplate extends AggregateRootBase {
   @PrimaryKey({ type: 'uuid' })
-  @Property({ type: 'uuid' })
   id: string = uuidv4();
 
   @Property({ type: 'string', length: 150 })
