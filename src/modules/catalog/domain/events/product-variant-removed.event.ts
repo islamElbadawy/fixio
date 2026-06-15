@@ -8,6 +8,6 @@ export class ProductVariantRemovedEvent extends DomainEvent {
     public readonly variantId: string,
     public readonly sku: string,
   ) {
-    super(`product-variant-removed-${variantId}`, new Date());
+    super();
   }
 }

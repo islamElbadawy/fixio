@@ -8,6 +8,6 @@ export class ProductVariantUpdatedEvent extends DomainEvent {
     public readonly variantId: string,
     public readonly changes: Record<string, unknown>,
   ) {
-    super(`product-variant-updated-${variantId}`, new Date());
+    super();
   }
 }
