@@ -21,7 +21,8 @@
     "migration:create": "mikro-orm migration:create",
     "migration:up": "tsx src/database/migrate.ts",
     "seed:catalog": "tsx src/database/seeds/catalog.seed.ts",
-    "migration:down": "mikro-orm migration:down"
+    "migration:down": "mikro-orm migration:down",
+    "seed:inventory": "tsx src/database/seeds/inventory.seed.ts"
   },
   "mikro-orm": {
     "configPaths": [

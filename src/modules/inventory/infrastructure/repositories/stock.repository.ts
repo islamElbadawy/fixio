@@ -76,35 +76,37 @@ export class StockRepository implements IStockRepository {
   }
 
   async getStockLevel(
-    variantId: string,
-    warehouseId: string,
-  ): Promise<{ onHand: number; reserved: number; available: number }> {
-    const inboundTypes = INBOUND_TYPES.map(t => `'${t}'`).join(',');
+  variantId: string,
+  warehouseId: string,
+): Promise<{ onHand: number; reserved: number; available: number }> {
+  const inboundTypes = INBOUND_TYPES.map(t => `'${t}'`).join(',');
 
-    const result = await this.em.getConnection().execute(`
-      SELECT
-        COALESCE(SUM(CASE WHEN type IN (${inboundTypes}) THEN quantity ELSE -quantity END), 0) AS on_hand,
-        COALESCE((
-          SELECT SUM(quantity)
-          FROM stock_reservations
-          WHERE variant_id = $1
-            AND warehouse_id = $2
-            AND is_active = true
-            AND is_deleted = false
-            AND (expires_at IS NULL OR expires_at > NOW())
-        ), 0) AS reserved
-      FROM inventory_transactions
-      WHERE variant_id = $1
-        AND warehouse_id = $2
-    `, [variantId, warehouseId]);
+  const connection = this.em.getConnection();
 
-    const row = result[0];
-    const onHand = Number(row.on_hand);
-    const reserved = Number(row.reserved);
-    const available = Math.max(0, onHand - reserved);
+  const txResult = await connection.execute(
+    `SELECT COALESCE(SUM(CASE WHEN type IN (${inboundTypes}) THEN quantity ELSE -quantity END), 0) AS on_hand
+     FROM inventory_transactions
+     WHERE variant_id = ? AND warehouse_id = ?`,
+    [variantId, warehouseId],
+  );
 
-    return { onHand, reserved, available };
-  }
+  const resResult = await connection.execute(
+    `SELECT COALESCE(SUM(quantity), 0) AS reserved
+     FROM stock_reservations
+     WHERE variant_id = ?
+       AND warehouse_id = ?
+       AND is_active = true
+       AND is_deleted = false
+       AND (expires_at IS NULL OR expires_at > NOW())`,
+    [variantId, warehouseId],
+  );
+
+  const onHand = Number(txResult[0].on_hand);
+  const reserved = Number(resResult[0].reserved);
+  const available = Math.max(0, onHand - reserved);
+
+  return { onHand, reserved, available };
+}
 
   async getTransactions(
     variantId: string,
