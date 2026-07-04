@@ -1,6 +1,7 @@
 import { QueryHandler } from '@nestjs/cqrs';
 import { GetInvoiceByIdQuery } from './get-invoice-by-id.query';
 import { IInvoiceRepository } from 'src/modules/sales/domain/repositories/invoice.repository.interface';
+import { NotFoundException } from '@nestjs/common';
 
 @QueryHandler(GetInvoiceByIdQuery)
 export class GetInvoiceByIdHandler {
@@ -8,6 +9,12 @@ export class GetInvoiceByIdHandler {
 
   async execute(query: GetInvoiceByIdQuery) {
     const invoiceId = query.id;
-    return this.invoiceRepo.findById(invoiceId);
+    const invoice = await this.invoiceRepo.findById(invoiceId);
+
+    if (!invoice) {
+      throw new NotFoundException(`Invoice with ID ${invoiceId} not found`);
+    }
+
+    return invoice;
   }
 }
