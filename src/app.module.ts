@@ -11,6 +11,7 @@ import * as Joi from 'joi';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { InventoryModule } from './modules/inventory/inventory.module';
+import { CustomersModule } from './modules/customers/customers.module';
 
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import { InventoryModule } from './modules/inventory/inventory.module';
     IdentityModule,
     CatalogModule,
     InventoryModule,
+    CustomersModule,
   ],
   controllers: [],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
