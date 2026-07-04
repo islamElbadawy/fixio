@@ -9,7 +9,7 @@ export class GetInvoiceByIdHandler {
 
   async execute(query: GetInvoiceByIdQuery) {
     const invoiceId = query.id;
-    const invoice = await this.invoiceRepo.findById(invoiceId);
+    const invoice = await this.invoiceRepo.findById(invoiceId, true);
 
     if (!invoice) {
       throw new NotFoundException(`Invoice with ID ${invoiceId} not found`);

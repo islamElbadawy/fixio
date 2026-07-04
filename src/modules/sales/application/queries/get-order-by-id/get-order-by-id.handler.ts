@@ -9,7 +9,7 @@ export class GetOrderByIdHandler {
 
   async execute(query: GetOrderByIdQuery) {
     const orderId = query.id;
-    const order = await this.salesOrderRepo.findById(orderId);
+    const order = await this.salesOrderRepo.findById(orderId, true);
 
     if (!order) {
       throw new NotFoundException(`Sales order with ID ${orderId} not found`);
