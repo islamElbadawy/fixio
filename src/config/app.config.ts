@@ -4,6 +4,7 @@ export const appConfig = registerAs('app', () => ({
   nodeEnv: process.env.NODE_ENV || 'development',
   port: parseInt(process.env.PORT ?? '3000', 10),
   name: process.env.APP_NAME ?? 'Fixio',
+  frontendOrigin: process.env.FRONTEND_ORIGIN ?? 'http://localhost:4200',
 }));
 
 export const dbConfig = registerAs('database', () => ({

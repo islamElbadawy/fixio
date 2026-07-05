@@ -8,6 +8,6 @@ export class ProductTemplateCreatedEvent extends DomainEvent {
     public readonly name: string,
     public readonly categoryId: string,
   ) {
-    super(`product-template-created-${templateId}`, new Date());
+    super();
   }
 }

@@ -26,8 +26,11 @@ async function bootstrap() {
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
   app.useGlobalFilters(new DomainExceptionFilter());
-  
-  app.enableCors();
+
+  app.enableCors({
+    origin: config.get<string>('app.frontendOrigin'),
+    credentials: true,
+  });
   app.enableShutdownHooks();
 
   const swaggerConfig = new DocumentBuilder()
@@ -51,6 +54,8 @@ async function bootstrap() {
 
   await app.listen(config.get('app.port') ?? 5000);
 
-  console.log(`\n🔧 Fixio API → http://localhost:${config.get('app.port') ?? 5000}/api\n`);
+  console.log(
+    `\n🔧 Fixio API → http://localhost:${config.get('app.port') ?? 5000}/api\n`,
+  );
 }
 bootstrap();
