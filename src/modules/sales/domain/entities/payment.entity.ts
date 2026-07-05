@@ -6,7 +6,6 @@ import {
 } from '@mikro-orm/decorators/legacy';
 import { Rel } from '@mikro-orm/core';
 import { Exclude } from 'class-transformer';
-import { v4 as uuidv4 } from 'uuid';
 import { BaseEntity } from '../../../shared/infrastructure/database/base.entity';
 import { PaymentMethod } from './payment-method.enum';
 
@@ -25,8 +24,11 @@ export class Payment extends BaseEntity {
   actorId: string | null = null;
 
   @Exclude()
-  @ManyToOne(() => Invoice, { fieldName: 'invoice_id' })
-  invoice!: Rel<Invoice>;
+  @ManyToOne({
+    entity: () => require('./invoice.aggregate').Invoice,
+    fieldName: 'invoice_id',
+    joinColumns: ['invoice_id'],
+    referencedColumnNames: ['id'],
+  })
+  invoice!: Rel<any>;
 }
-
-import { Invoice } from './invoice.aggregate';

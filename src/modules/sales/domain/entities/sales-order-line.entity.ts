@@ -1,7 +1,6 @@
 import { Entity, Property, ManyToOne } from '@mikro-orm/decorators/legacy';
 import { Rel } from '@mikro-orm/core';
 import { Exclude } from 'class-transformer';
-import { v4 as uuidv4 } from 'uuid';
 import { BaseEntity } from '../../../shared/infrastructure/database/base.entity';
 
 @Entity({ tableName: 'sales_order_lines' })
@@ -35,8 +34,11 @@ export class SalesOrderLine extends BaseEntity {
   reservationId: string | null = null;
 
   @Exclude()
-  @ManyToOne(() => SalesOrder, { fieldName: 'order_id' })
-  order!: Rel<SalesOrder>;
+  @ManyToOne({
+    entity: () => require('./sales-order.aggregate').SalesOrder,
+    fieldName: 'order_id',
+    joinColumns: ['order_id'],
+    referencedColumnNames: ['id'],
+  })
+  order!: Rel<any>;
 }
-
-import { SalesOrder } from './sales-order.aggregate';

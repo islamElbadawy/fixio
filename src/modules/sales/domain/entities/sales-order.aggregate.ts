@@ -5,6 +5,7 @@ import {
   OneToMany,
   Enum,
   Index,
+  PrimaryKey,
 } from '@mikro-orm/decorators/legacy';
 import { Collection, Rel } from '@mikro-orm/core';
 import { Exclude } from 'class-transformer';
@@ -25,7 +26,7 @@ import { CustomerEntity } from 'src/modules/customers/domain/entities/customer.e
 
 @Entity({ tableName: 'sales_orders' })
 export class SalesOrder extends AggregateRootBase {
-  @Property({ type: 'uuid' })
+  @PrimaryKey({ type: 'uuid' })
   id: string = uuidv4();
 
   @Index({ name: 'idx_orders_number' })
@@ -126,7 +127,7 @@ export class SalesOrder extends AggregateRootBase {
     line.quantity = quantity;
     line.unitPrice = unitPrice;
     line.lineTotal = Math.round(quantity * unitPrice * 100) / 100;
-    line.order = this;
+    line.order = this as unknown as Rel<SalesOrder>;
 
     this.lines.add(line);
     this.recalculateTotal();
@@ -146,7 +147,11 @@ export class SalesOrder extends AggregateRootBase {
       throw new OrderAlreadyConfirmedException(this.id);
     }
 
-    const loadedLines = this.lines.getItems();
+    // Use isInitialized check — if not initialized use internal array
+    const loadedLines = this.lines.isInitialized()
+      ? this.lines.getItems()
+      : ((this.lines as any)._items ?? []);
+
     if (loadedLines.length === 0) {
       throw new EmptyOrderException(this.id);
     }
@@ -157,7 +162,7 @@ export class SalesOrder extends AggregateRootBase {
       new OrderConfirmedEvent(
         this.id,
         (this.customer as any).id,
-        loadedLines.map((l) => ({
+        loadedLines.map((l: any) => ({
           variantId: l.variantId,
           warehouseId: l.warehouseId,
           quantity: Number(l.quantity),

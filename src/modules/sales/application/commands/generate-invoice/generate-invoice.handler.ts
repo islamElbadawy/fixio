@@ -31,6 +31,10 @@ export class GenerateInvoiceHandler implements ICommandHandler<GenerateInvoiceCo
     const order = await this.orderRepo.findById(orderId, true);
     if (!order) throw new NotFoundException(`Order ${orderId} not found`);
 
+    if (!order.lines.isInitialized()) {
+      await order.lines.init();
+    }
+
     if (order.status !== OrderStatus.CONFIRMED) {
       throw new DomainException(
         `Order ${orderId} must be confirmed before generating an invoice`,

@@ -27,6 +27,10 @@ export class CancelOrderHandler implements ICommandHandler<CancelOrderCommand> {
     const order = await this.orderRepo.findById(orderId, true);
     if (!order) throw new NotFoundException(`Order ${orderId} not found`);
 
+    if (!order.lines.isInitialized()) {
+      await order.lines.init();
+    }
+
     order.cancel();
 
     await this.orderRepo.save(order);

@@ -5,6 +5,7 @@ import {
   OneToMany,
   Enum,
   Index,
+  PrimaryKey,
 } from '@mikro-orm/decorators/legacy';
 import { Collection, Rel } from '@mikro-orm/core';
 import { Exclude } from 'class-transformer';
@@ -24,7 +25,7 @@ import { CustomerEntity } from 'src/modules/customers/domain/entities/customer.e
 
 @Entity({ tableName: 'invoices' })
 export class Invoice extends AggregateRootBase {
-  @Property({ type: 'uuid' })
+  @PrimaryKey({ type: 'uuid' })
   id: string = uuidv4();
 
   @Index({ name: 'idx_invoices_number' })
@@ -149,7 +150,7 @@ export class Invoice extends AggregateRootBase {
     payment.method = method;
     payment.actorId = actorId;
     payment.notes = notes ?? null;
-    payment.invoice = this;
+    payment.invoice = this as unknown as Rel<Invoice>;
 
     this.payments.add(payment);
 
@@ -163,18 +164,12 @@ export class Invoice extends AggregateRootBase {
       this.remainingAmount = 0;
 
       const order = this.order as any;
-      const orderLines = order.lines?.getItems() ?? [];
 
       this.addDomainEvent(
         new InvoicePaidEvent(
           this.id,
           order.id,
-          orderLines.map((l: any) => ({
-            variantId: l.variantId,
-            warehouseId: l.warehouseId,
-            quantity: Number(l.quantity),
-            reservationId: l.reservationId,
-          })),
+          [], // lines resolved by listener from order ID
         ),
       );
     } else {

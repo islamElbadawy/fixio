@@ -7,7 +7,7 @@ import {
 } from 'src/modules/sales/domain/repositories/sales-order.repository.interface';
 
 @QueryHandler(GetInvoicesQuery)
-export class GetInvoicesHandler {
+export class GetOrdersHandler {
   constructor(
     @Inject(SALES_ORDER_REPOSITORY)
     private readonly salesOrders: ISalesOrderRepository,
