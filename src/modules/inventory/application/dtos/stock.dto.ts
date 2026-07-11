@@ -57,9 +57,22 @@ export class AdjustStockDto {
   @Type(() => Number)
   quantity!: number;
 
-  @ApiProperty({ enum: [TransactionType.ADJUSTMENT_IN, TransactionType.ADJUSTMENT_OUT] })
-  @IsEnum([TransactionType.ADJUSTMENT_IN, TransactionType.ADJUSTMENT_OUT])
-  type!: TransactionType.ADJUSTMENT_IN | TransactionType.ADJUSTMENT_OUT;
+  @ApiProperty({
+    enum: [
+      TransactionType.ADJUSTMENT_IN,
+      TransactionType.ADJUSTMENT_OUT,
+      TransactionType.WORKSHOP_USAGE,
+    ],
+  })
+  @IsEnum([
+    TransactionType.ADJUSTMENT_IN,
+    TransactionType.ADJUSTMENT_OUT,
+    TransactionType.WORKSHOP_USAGE,
+  ])
+  type!:
+    | TransactionType.ADJUSTMENT_IN
+    | TransactionType.ADJUSTMENT_OUT
+    | TransactionType.WORKSHOP_USAGE;
 
   @ApiPropertyOptional({ example: 'Damaged items removed' })
   @IsOptional()

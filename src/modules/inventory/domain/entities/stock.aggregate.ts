@@ -204,7 +204,10 @@ export class Stock extends AggregateRootBase {
 
   adjust(
     quantity: number,
-    type: TransactionType.ADJUSTMENT_IN | TransactionType.ADJUSTMENT_OUT,
+    type:
+      | TransactionType.ADJUSTMENT_IN
+      | TransactionType.ADJUSTMENT_OUT
+      | TransactionType.WORKSHOP_USAGE,
     notes: string | null = null,
     actorId: string | null = null,
   ): InventoryTransactionEntity {
@@ -212,7 +215,12 @@ export class Stock extends AggregateRootBase {
       throw new Error('Adjustment quantity must be greater than zero');
     }
 
-    if (type === TransactionType.ADJUSTMENT_OUT) {
+    const isOutbound = [
+      TransactionType.ADJUSTMENT_OUT,
+      TransactionType.WORKSHOP_USAGE,
+    ].includes(type);
+
+    if (isOutbound) {
       const { onHand } = this.getLevel();
       if (onHand < quantity) {
         throw new InsufficientStockException(
@@ -245,7 +253,6 @@ export class Stock extends AggregateRootBase {
 
     return transaction;
   }
-
   recordWorkshopUsage(
     quantity: number,
     workOrderId: string,
