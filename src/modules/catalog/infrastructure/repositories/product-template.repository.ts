@@ -75,7 +75,7 @@ export class ProductRepository implements IProductRepository {
     return em
       .createQueryBuilder(ProductVariant, 'v')
       .where({ isDeleted: false, isActive: true })
-      .andWhere(`v.specs @> '${JSON.stringify(filters)}'::jsonb`)
+      .andWhere('v.specs @> ?::jsonb', [JSON.stringify(filters)])
       .getResultList();
   }
 

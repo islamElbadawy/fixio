@@ -21,7 +21,9 @@
     "migration:create": "mikro-orm migration:create",
     "migration:up": "tsx src/database/migrate.ts",
     "seed:catalog": "tsx src/database/seeds/catalog.seed.ts",
-    "migration:down": "mikro-orm migration:down"
+    "migration:down": "mikro-orm migration:down",
+    "seed:inventory": "tsx src/database/seeds/inventory.seed.ts",
+    "seed:customers": "tsx src/database/seeds/customers.seed.ts"
   },
   "mikro-orm": {
     "configPaths": [
@@ -46,9 +48,11 @@
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/swagger": "^11.4.4",
+    "@nestjs/throttler": "^6.5.0",
     "bcrypt": "^6.0.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
+    "joi": "^18.2.1",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.2.2",

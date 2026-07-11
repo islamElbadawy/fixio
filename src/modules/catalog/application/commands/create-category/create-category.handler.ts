@@ -1,5 +1,4 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { CategoryRepository } from 'src/modules/catalog/infrastructure/repositories/category.repository';
 import { CreateCategoryCommand } from './create-category.command';
 import { ConflictException, Inject, NotFoundException } from '@nestjs/common';
 import {

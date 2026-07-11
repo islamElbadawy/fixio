@@ -1,10 +1,12 @@
+import { v4 as uuidv4 } from 'uuid';
+
 export abstract class DomainEvent {
   readonly eventId: string;
   readonly occurredAt: Date;
   abstract readonly eventName: string;
 
-  constructor(eventId: string, occurredAt: Date) {
-    this.eventId = eventId;
-    this.occurredAt = occurredAt;
+  constructor() {
+    this.eventId = uuidv4();
+    this.occurredAt = new Date();
   }
 }
