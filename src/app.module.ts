@@ -13,6 +13,8 @@ import { APP_GUARD } from '@nestjs/core';
 import { InventoryModule } from './modules/inventory/inventory.module';
 import { CustomersModule } from './modules/customers/customers.module';
 import { SalesModule } from './modules/sales/sales.module';
+import { VehiclesModule } from './modules/vehicles/vehicles.module';
+import { WorkshopModule } from './modules/workshop/workshop.module';
 
 @Module({
   imports: [
@@ -60,6 +62,8 @@ import { SalesModule } from './modules/sales/sales.module';
     InventoryModule,
     CustomersModule,
     SalesModule,
+    VehiclesModule,
+    WorkshopModule,
   ],
   controllers: [],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],

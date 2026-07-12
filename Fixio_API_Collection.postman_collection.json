@@ -1,0 +1,666 @@
+{
+  "info": {
+    "name": "Fixio API",
+    "description": "Car Workshop & Spare Parts Management System API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@fixio.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Register User (Admin Only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"newuser@fixio.com\",\n  \"password\": \"securePass123\",\n  \"role\": \"SALES_EMPLOYEE\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "me"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{refreshToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/refresh",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "refresh"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "logout"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Customers",
+      "item": [
+        {
+          "name": "Get All Customers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/customers",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "customers"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Customer by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/customers/550e8400-e29b-41d4-a716-446655440000",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "customers", "550e8400-e29b-41d4-a716-446655440000"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Customer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"email\": \"john@example.com\",\n  \"phone\": \"+1234567890\",\n  \"address\": \"123 Main St\",\n  \"city\": \"New York\",\n  \"state\": \"NY\",\n  \"zipCode\": \"10001\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/customers",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "customers"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Customer",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Jane\",\n  \"email\": \"jane@example.com\",\n  \"phone\": \"+1234567891\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/customers/550e8400-e29b-41d4-a716-446655440000",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "customers", "550e8400-e29b-41d4-a716-446655440000"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Catalog - Categories",
+      "item": [
+        {
+          "name": "Get All Categories",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/catalog/categories",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "catalog", "categories"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Category by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/catalog/categories/550e8400-e29b-41d4-a716-446655440000",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "catalog", "categories", "550e8400-e29b-41d4-a716-446655440000"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Category Children",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/catalog/categories/550e8400-e29b-41d4-a716-446655440000/children",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "catalog", "categories", "550e8400-e29b-41d4-a716-446655440000", "children"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Category",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Engine Parts\",\n  \"slug\": \"engine-parts\",\n  \"description\": \"All engine-related spare parts\",\n  \"parentId\": null\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/catalog/categories",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "catalog", "categories"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Category",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Engine Components\",\n  \"description\": \"Updated description\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/catalog/categories/550e8400-e29b-41d4-a716-446655440000",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "catalog", "categories", "550e8400-e29b-41d4-a716-446655440000"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Category",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/catalog/categories/550e8400-e29b-41d4-a716-446655440000",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "catalog", "categories", "550e8400-e29b-41d4-a716-446655440000"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Catalog - Product Templates",
+      "item": [
+        {
+          "name": "Get All Templates",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/catalog/templates",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "catalog", "templates"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Templates by Category",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/catalog/templates?categoryId=550e8400-e29b-41d4-a716-446655440000",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "catalog", "templates"],
+              "query": [
+                {
+                  "key": "categoryId",
+                  "value": "550e8400-e29b-41d4-a716-446655440000"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Template by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/catalog/templates/550e8400-e29b-41d4-a716-446655440000",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "catalog", "templates", "550e8400-e29b-41d4-a716-446655440000"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Template",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Synthetic Motor Oil\",\n  \"slug\": \"synthetic-motor-oil\",\n  \"description\": \"Premium synthetic engine oil\",\n  \"categoryId\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"specificationSchema\": {\n    \"viscosity\": \"string\",\n    \"volume\": \"number\",\n    \"brand\": \"string\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/catalog/templates",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "catalog", "templates"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Template",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Premium Synthetic Motor Oil\",\n  \"description\": \"High-grade synthetic oil\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/catalog/templates/550e8400-e29b-41d4-a716-446655440000",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "catalog", "templates", "550e8400-e29b-41d4-a716-446655440000"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Template",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/catalog/templates/550e8400-e29b-41d4-a716-446655440000",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "catalog", "templates", "550e8400-e29b-41d4-a716-446655440000"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Catalog - Product Variants",
+      "item": [
+        {
+          "name": "Get Variant by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/catalog/variants/550e8400-e29b-41d4-a716-446655440000",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "catalog", "variants", "550e8400-e29b-41d4-a716-446655440000"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Variant by SKU",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/catalog/variants/sku/SYNTH-OIL-5W30-1L",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "catalog", "variants", "sku", "SYNTH-OIL-5W30-1L"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Variants by Template",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/catalog/templates/550e8400-e29b-41d4-a716-446655440000/variants",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "catalog", "templates", "550e8400-e29b-41d4-a716-446655440000", "variants"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Search Variants by Specs (GET)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/catalog/variants/search?filters={\"viscosity\":\"5W-30\",\"brand\":\"Mobil 1\"}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "catalog", "variants", "search"],
+              "query": [
+                {
+                  "key": "filters",
+                  "value": "{\"viscosity\":\"5W-30\",\"brand\":\"Mobil 1\"}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Search Variants by Specs (POST)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"filters\": {\n    \"viscosity\": \"5W-30\",\n    \"brand\": \"Mobil 1\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/catalog/variants/search",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "catalog", "variants", "search"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Variant",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"templateId\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"sku\": \"SYNTH-OIL-5W30-1L\",\n  \"price\": 29.99,\n  \"specifications\": {\n    \"viscosity\": \"5W-30\",\n    \"volume\": \"1\",\n    \"brand\": \"Mobil 1\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/catalog/variants",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "catalog", "variants"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Variant",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"price\": 32.99,\n  \"specifications\": {\n    \"viscosity\": \"5W-30\",\n    \"volume\": \"1\",\n    \"brand\": \"Mobil 1 Enhanced\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/catalog/variants/550e8400-e29b-41d4-a716-446655440000",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "catalog", "variants", "550e8400-e29b-41d4-a716-446655440000"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Variant",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/catalog/variants/550e8400-e29b-41d4-a716-446655440000",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "catalog", "variants", "550e8400-e29b-41d4-a716-446655440000"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "accessToken",
+      "value": ""
+    },
+    {
+      "key": "refreshToken",
+      "value": ""
+    }
+  ]
+}

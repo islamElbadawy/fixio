@@ -23,7 +23,8 @@
     "seed:catalog": "tsx src/database/seeds/catalog.seed.ts",
     "migration:down": "mikro-orm migration:down",
     "seed:inventory": "tsx src/database/seeds/inventory.seed.ts",
-    "seed:customers": "tsx src/database/seeds/customers.seed.ts"
+    "seed:customers": "tsx src/database/seeds/customers.seed.ts",
+    "seed:workshop": "tsx src/database/seeds/workshop.seed.ts"
   },
   "mikro-orm": {
     "configPaths": [
