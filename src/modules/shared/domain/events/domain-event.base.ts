@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid';
+import { generateId } from '../../infrastructure/database/uuid.util';
 
 export abstract class DomainEvent {
   readonly eventId: string;
@@ -6,7 +6,7 @@ export abstract class DomainEvent {
   abstract readonly eventName: string;
 
   constructor() {
-    this.eventId = uuidv4();
+    this.eventId = generateId();
     this.occurredAt = new Date();
   }
 }

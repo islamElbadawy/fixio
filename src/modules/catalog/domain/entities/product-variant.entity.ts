@@ -6,7 +6,7 @@ import {
 } from '@mikro-orm/decorators/legacy';
 import { Rel } from '@mikro-orm/core';
 import { Exclude } from 'class-transformer';
-import { v4 as uuidv4 } from 'uuid';
+import { generateId } from '../../../shared/infrastructure/database/uuid.util';
 import { BaseEntity } from '../../../shared/infrastructure/database/base.entity';
 import { DomainException } from '../../../shared/domain/exceptions/domain.exception';
 

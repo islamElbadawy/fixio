@@ -7,7 +7,7 @@ import {
   Index,
 } from '@mikro-orm/decorators/legacy';
 import { Rel } from '@mikro-orm/core';
-import { v4 as uuidv4 } from 'uuid';
+import { generateId } from '../../../shared/infrastructure/database/uuid.util';
 import { TransactionType } from './transaction-type.enum';
 import { WarehouseEntity } from './warehouse.entity';
 
@@ -16,7 +16,7 @@ import { WarehouseEntity } from './warehouse.entity';
 @Index({ properties: ['variantId', 'type'] })
 export class InventoryTransactionEntity {
   @PrimaryKey({ type: 'uuid' })
-  id: string = uuidv4();
+  id: string = generateId();
 
   @Index()
   @Property({ type: 'uuid', fieldName: 'variant_id' })

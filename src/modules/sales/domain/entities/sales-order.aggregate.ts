@@ -9,7 +9,7 @@ import {
 } from '@mikro-orm/decorators/legacy';
 import { Collection, Rel } from '@mikro-orm/core';
 import { Exclude } from 'class-transformer';
-import { v4 as uuidv4 } from 'uuid';
+import { generateId } from '../../../shared/infrastructure/database/uuid.util';
 import { AggregateRootBase } from '../../../shared/infrastructure/database/aggregate-root.base';
 import { OrderStatus } from './order-status.enum';
 import { SalesOrderLine } from './sales-order-line.entity';
@@ -27,7 +27,7 @@ import { CustomerEntity } from 'src/modules/customers/domain/entities/customer.e
 @Entity({ tableName: 'sales_orders' })
 export class SalesOrder extends AggregateRootBase {
   @PrimaryKey({ type: 'uuid' })
-  id: string = uuidv4();
+  id: string = generateId();
 
   @Index({ name: 'idx_orders_number' })
   @Property({
@@ -121,7 +121,7 @@ export class SalesOrder extends AggregateRootBase {
     }
 
     const line = new SalesOrderLine();
-    line.id = uuidv4();
+    line.id = generateId();
     line.variantId = variantId;
     line.warehouseId = warehouseId;
     line.quantity = quantity;

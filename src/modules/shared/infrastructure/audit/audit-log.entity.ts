@@ -4,12 +4,12 @@ import {
   PrimaryKey,
   Index,
 } from '@mikro-orm/decorators/legacy';
-import { v4 as uuidv4 } from 'uuid';
+import { generateId } from '../database/uuid.util';
 
 @Entity({ tableName: 'audit_logs' })
 export class AuditLogEntity {
   @PrimaryKey({ type: 'uuid' })
-  id: string = uuidv4();
+  id: string = generateId();
 
   @Index({ name: 'idx_audit_actor' })
   @Property({ type: 'uuid', nullable: true, fieldName: 'actor_id' })
