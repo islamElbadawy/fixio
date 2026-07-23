@@ -8,7 +8,7 @@ import {
 } from '@mikro-orm/decorators/legacy';
 import { Collection, Rel } from '@mikro-orm/core';
 import { Exclude } from 'class-transformer';
-import { v4 as uuidv4 } from 'uuid';
+import { generateId } from '../../../shared/infrastructure/database/uuid.util';
 import { CategoryEntity } from './category.entity';
 import { ProductVariant } from './product-variant.entity';
 import { DomainException } from '../../../shared/domain/exceptions/domain.exception';
@@ -21,7 +21,7 @@ import { AggregateRootBase } from '../../../shared/infrastructure/database/aggre
 @Entity({ tableName: 'product_templates' })
 export class ProductTemplate extends AggregateRootBase {
   @PrimaryKey({ type: 'uuid' })
-  id: string = uuidv4();
+  id: string = generateId();
 
   @Property({ type: 'string', length: 150 })
   name!: string;
@@ -113,7 +113,7 @@ export class ProductTemplate extends AggregateRootBase {
     }
 
     const variant = new ProductVariant();
-    variant.id = uuidv4();
+    variant.id = generateId();
     variant.sku = sku;
     variant.purchasePrice = purchasePrice;
     variant.sellingPrice = sellingPrice;

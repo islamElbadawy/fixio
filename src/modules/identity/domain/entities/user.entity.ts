@@ -5,13 +5,13 @@ import {
   Enum,
   Index,
 } from '@mikro-orm/decorators/legacy';
-import { v4 as uuidv4 } from 'uuid';
+import { generateId } from '../../../shared/infrastructure/database/uuid.util';
 import { UserRole } from './role.enum';
 
 @Entity({ tableName: 'users' })
 export class UserEntity {
   @PrimaryKey({ type: 'uuid' })
-  id: string = uuidv4();
+  id: string = generateId();
 
   @Index({ name: 'idx_users_email' })
   @Property({ type: 'string', length: 255, unique: true })

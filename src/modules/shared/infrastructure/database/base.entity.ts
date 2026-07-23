@@ -1,9 +1,9 @@
 import { PrimaryKey, Property } from '@mikro-orm/decorators/legacy';
-import { v4 as uuidv4 } from 'uuid';
+import { generateId } from './uuid.util';
 
 export abstract class BaseEntity {
   @PrimaryKey({ type: 'uuid' })
-  id: string = uuidv4();
+  id: string = generateId();
 
   @Property({ type: 'timestamptz', onCreate: () => new Date() })
   createdAt: Date = new Date();

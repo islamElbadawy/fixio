@@ -9,7 +9,7 @@ import {
 } from '@mikro-orm/decorators/legacy';
 import { Collection, Rel } from '@mikro-orm/core';
 import { Exclude } from 'class-transformer';
-import { v4 as uuidv4 } from 'uuid';
+import { generateId } from '../../../shared/infrastructure/database/uuid.util';
 import { AggregateRootBase } from '../../../shared/infrastructure/database/aggregate-root.base';
 import { WorkOrderStatus } from './work-order-status.enum';
 import { WorkOrderLineType } from './work-order-line-type.enum';
@@ -33,7 +33,7 @@ import { CustomerEntity } from 'src/modules/customers/domain/entities/customer.e
 @Entity({ tableName: 'work_orders' })
 export class WorkOrder extends AggregateRootBase {
   @PrimaryKey({ type: 'uuid' })
-  id: string = uuidv4();
+  id: string = generateId();
 
   @Index({ name: 'idx_work_orders_number' })
   @Property({
@@ -158,7 +158,7 @@ export class WorkOrder extends AggregateRootBase {
     }
 
     const line = new WorkOrderLine();
-    line.id = uuidv4();
+    line.id = generateId();
     line.type = type;
     line.description = description;
     line.variantId = variantId ?? null;
