@@ -4,6 +4,8 @@ import { ConfigService } from '@nestjs/config';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { DomainExceptionFilter } from './modules/shared/infrastructure/filters/domain-exception.filter';
+import { HttpExceptionFilter } from './modules/shared/infrastructure/filters/http-exception.filter';
+import { ResponseInterceptor } from './modules/shared/infrastructure/interceptors/response.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -23,9 +25,12 @@ async function bootstrap() {
     }),
   );
 
-  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
+  app.useGlobalInterceptors(
+    new ClassSerializerInterceptor(app.get(Reflector)),
+    new ResponseInterceptor(),
+  );
 
-  app.useGlobalFilters(new DomainExceptionFilter());
+  app.useGlobalFilters(new HttpExceptionFilter(), new DomainExceptionFilter());
 
   app.enableCors({
     origin: config.get<string>('app.frontendOrigin'),

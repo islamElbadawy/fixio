@@ -1,20 +1,40 @@
 import {
-  ArgumentsHost,
-  Catch,
   ExceptionFilter,
+  Catch,
+  ArgumentsHost,
   HttpStatus,
+  HttpException,
 } from '@nestjs/common';
+import { Response } from 'express';
+import { DomainException } from '../../domain/exceptions/domain.exception';
 
-@Catch()
+interface ErrorResponse {
+  success: false;
+  error: {
+    code: string;
+    message: string;
+    statusCode: number;
+    details?: unknown;
+  };
+  timestamp: string;
+}
+
+@Catch(DomainException)
 export class DomainExceptionFilter implements ExceptionFilter {
-  catch(exception: any, host: ArgumentsHost) {
+  catch(exception: DomainException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
-    const response = ctx.getResponse();
+    const response = ctx.getResponse<Response>();
 
-    response.status(HttpStatus.UNPROCESSABLE_ENTITY).json({
-      statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-      error: 'Domain Rule Validation',
-      message: exception.message,
-    });
+    const body: ErrorResponse = {
+      success: false,
+      error: {
+        code: 'DOMAIN_RULE_VIOLATION',
+        message: exception.message,
+        statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+      },
+      timestamp: new Date().toISOString(),
+    };
+
+    response.status(HttpStatus.UNPROCESSABLE_ENTITY).json(body);
   }
 }
