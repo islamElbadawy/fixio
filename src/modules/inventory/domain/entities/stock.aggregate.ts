@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid';
+import { generateId } from '../../../shared/infrastructure/database/uuid.util';
 import { AggregateRootBase } from '../../../shared/infrastructure/database/aggregate-root.base';
 import { InventoryTransactionEntity } from './inventory-transaction.entity';
 import { StockReservationEntity } from './stock-reservation.entity';
@@ -93,7 +93,7 @@ export class Stock extends AggregateRootBase {
     }
 
     const reservation = new StockReservationEntity();
-    reservation.id = uuidv4();
+    reservation.id = generateId();
     reservation.variantId = this.variantId;
     reservation.warehouse = this.warehouse;
     reservation.quantity = quantity;
@@ -290,7 +290,7 @@ export class Stock extends AggregateRootBase {
     actorId: string | null,
   ): InventoryTransactionEntity {
     const tx = new InventoryTransactionEntity();
-    tx.id = uuidv4();
+    tx.id = generateId();
     tx.variantId = this.variantId;
     tx.warehouse = this.warehouse;
     tx.type = type;

@@ -9,7 +9,7 @@ import {
 } from '@mikro-orm/decorators/legacy';
 import { Collection, Rel } from '@mikro-orm/core';
 import { Exclude } from 'class-transformer';
-import { v4 as uuidv4 } from 'uuid';
+import { generateId } from '../../../shared/infrastructure/database/uuid.util';
 import { AggregateRootBase } from '../../../shared/infrastructure/database/aggregate-root.base';
 import { SalesOrder } from './sales-order.aggregate';
 import { Payment } from './payment.entity';
@@ -26,7 +26,7 @@ import { CustomerEntity } from 'src/modules/customers/domain/entities/customer.e
 @Entity({ tableName: 'invoices' })
 export class Invoice extends AggregateRootBase {
   @PrimaryKey({ type: 'uuid' })
-  id: string = uuidv4();
+  id: string = generateId();
 
   @Index({ name: 'idx_invoices_number' })
   @Property({
@@ -145,7 +145,7 @@ export class Invoice extends AggregateRootBase {
     }
 
     const payment = new Payment();
-    payment.id = uuidv4();
+    payment.id = generateId();
     payment.amount = amount;
     payment.method = method;
     payment.actorId = actorId;
