@@ -38,24 +38,26 @@ async function bootstrap() {
   });
   app.enableShutdownHooks();
 
-  const swaggerConfig = new DocumentBuilder()
-    .setTitle('Fixio API')
-    .setDescription('Car Workshop & Spare Parts Management System')
-    .setVersion('1.0')
-    .addBearerAuth(
-      {
-        type: 'http',
-        scheme: 'bearer',
-        bearerFormat: 'JWT',
-        name: 'Authorization',
-        in: 'header',
-      },
-      'access-token',
-    )
-    .build();
+  if (config.get<string>('app.nodeEnv') !== 'production') {
+    const swaggerConfig = new DocumentBuilder()
+      .setTitle('Fixio API')
+      .setDescription('Car Workshop & Spare Parts Management System')
+      .setVersion('1.0')
+      .addBearerAuth(
+        {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+          name: 'Authorization',
+          in: 'header',
+        },
+        'access-token',
+      )
+      .build();
 
-  const document = SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup('api/docs', app, document);
+    const document = SwaggerModule.createDocument(app, swaggerConfig);
+    SwaggerModule.setup('api/docs', app, document);
+  }
 
   await app.listen(config.get('app.port') ?? 5000);
 

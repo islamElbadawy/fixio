@@ -15,6 +15,7 @@ import { CustomersModule } from './modules/customers/customers.module';
 import { SalesModule } from './modules/sales/sales.module';
 import { VehiclesModule } from './modules/vehicles/vehicles.module';
 import { WorkshopModule } from './modules/workshop/workshop.module';
+import { HealthController } from './health.controller';
 
 @Module({
   imports: [
@@ -65,7 +66,7 @@ import { WorkshopModule } from './modules/workshop/workshop.module';
     VehiclesModule,
     WorkshopModule,
   ],
-  controllers: [],
+  controllers: [HealthController],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
 export class AppModule {}
